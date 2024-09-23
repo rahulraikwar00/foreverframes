@@ -6,14 +6,14 @@ import { Camera } from "lucide-react";
 import PreviewImage from "./PreviewImage";
 import PictureList from "./PictureList";
 import { Input } from "./ui/input";
-import GeolocationComponent from "./GeoLocation";
 
 export default function Component() {
   const [pictures, setPictures] = useState<PinnedPicture[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
-
   const [location, setLocation] = useState<Coordinates | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -39,6 +39,10 @@ export default function Component() {
       ]);
       setPreviewImage(null);
       setDescription(null);
+      setLocation(null);
+      setError(null);
+    } else {
+      setError("Please add an image and a description");
     }
   };
 
@@ -46,7 +50,6 @@ export default function Component() {
     <div>
       <main>
         <section className="flex flex-col gap-4">
-          <GeolocationComponent setLocation={setLocation} />
           {!previewImage && (
             <Button
               className="bg-[#405D72] hover:bg-[#405D72]/90 text-white min-w-1 sm:w-auto"
@@ -55,7 +58,14 @@ export default function Component() {
               <Camera className="mr-2 h-4 w-4" /> Take Picture
             </Button>
           )}
-
+          {previewImage && (
+            <Button
+              className="bg-[#405D72] hover:bg-[#405D72]/90 text-white"
+              onClick={(): void => setPreviewImage(null)}
+            >
+              close it{" "}
+            </Button>
+          )}
           <Input
             id="camera-input"
             type="file"
@@ -69,6 +79,10 @@ export default function Component() {
             handlePinClick={handlePinClick}
             previewImage={previewImage}
             setDescription={setDescription}
+            location={location}
+            setLocation={setLocation}
+            error={error}
+            setError={setError}
           />
 
           <PictureList PinPicture={pictures} />
